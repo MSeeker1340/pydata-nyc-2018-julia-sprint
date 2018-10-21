@@ -187,6 +187,18 @@ class JuliaLexer(RegexLexer):
                 'setfield!','throw','tuple','typeassert','typeof','undef','include'
             ], suffix=r'\b'), Name.Function),
 
+            # macros exported by Core and Base
+            (words([
+                '@MIME_str','@__DIR__','@__FILE__','@__LINE__','@__MODULE__','@__dot__','@allocated',
+                '@assert','@async','@b_str','@big_str','@boundscheck','@cfunction','@cmd','@debug',
+                '@deprecate','@doc','@elapsed','@enum','@error','@eval','@evalpoly','@fastmath',
+                '@generated','@gensym','@goto','@html_str','@inbounds','@info','@inline','@int128_str',
+                '@isdefined','@label','@macroexpand','@macroexpand1','@noinline','@nospecialize',
+                '@polly','@r_str','@raw_str','@s_str','@show','@simd','@specialize','@static','@sync',
+                '@task','@text_str','@threadcall','@time','@timed','@timev','@uint128_str','@v_str',
+                '@view','@views','@warn'
+            ], suffix=r'\b'), Name.Namespace),
+
             # modules exported by Core and Base
             (words([
                 'Base','Broadcast','Docs','GC','Iterators','Libc','MathConstants','Meta',

@@ -11,14 +11,20 @@ open("names.txt", "w") do f
         filter!(x -> isascii(x[1]) && isletter(x[1]) && islowercase(x[1]),
             map(string, filter!(x -> !Base.isdeprecated(Base, x),
                 [names(Base); names(Core); :include])))), ',')
+    base_macros = join(map(x -> "'$x'",
+    filter!(x -> x[1] == '@',
+        map(string, filter!(x -> !Base.isdeprecated(Base, x),
+            [names(Base); names(Core)])))), ',')
     base_modules = join(map(x -> "'$x'",
         filter!(x -> isa(eval(x), Module) && !Base.isdeprecated(Base, x),
             [names(Base); names(Core)])), ",")
     
-    println(f, "Base types:")
+    println(f, "Core & Base types:")
     println(f, base_types)
-    println(f, "\nBase functions:")
+    println(f, "\nCore & Base functions:")
     println(f, base_funcs)
-    println(f, "\nBase, modules:")
+    println(f, "\nCore & Base macros")
+    println(f, base_macros)
+    println(f, "\nCore & Base modules:")
     println(f, base_modules)
 end
