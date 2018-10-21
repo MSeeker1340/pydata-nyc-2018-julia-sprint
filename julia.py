@@ -47,7 +47,7 @@ class JuliaLexer(RegexLexer):
             (r'[\[\]{}(),;]', Punctuation),
 
             # keywords
-            (r'in\b', Keyword.Pseudo),
+            (r'(in|im)\b', Keyword.Pseudo),
             (r'(true|false)\b', Keyword.Constant),
             (r'(local|global|const)\b', Keyword.Declaration),
             (r'(using|import|export)\b', Keyword.Namespace),
@@ -133,7 +133,7 @@ class JuliaLexer(RegexLexer):
                 'functionloc','gcd','gcdx','gensym','get','get!','get_zero_subnormals','gethostname',
                 'getindex','getkey','getpid','getproperty','gperm','hash','haskey','hasmethod',
                 'hcat','hex2bytes','hex2bytes!','homedir','htol','hton','hvcat','hypot','identity',
-                'ifelse','ignorestatus','im','imag','in','include_dependency','include_string',
+                'ifelse','ignorestatus','imag','in','include_dependency','include_string',
                 'indexin','insert!','instances','intersect','intersect!','inv','invmod','invperm',
                 'invpermute!','isabspath','isabstracttype','isapprox','isascii','isassigned','isbits',
                 'isbitstype','isblockdev','ischardev','iscntrl','isconcretetype','isconst','isdigit',
@@ -155,7 +155,7 @@ class JuliaLexer(RegexLexer):
                 'numerator','objectid','occursin','oftype','one','ones','oneunit','open','operm',
                 'pairs','parent','parentindices','parentmodule','parse','partialsort','partialsort!',
                 'partialsortperm','partialsortperm!','pathof','permute!','permutedims','permutedims!',
-                'pi','pipeline','pointer','pointer_from_objref','pop!','popdisplay','popfirst!',
+                'pipeline','pointer','pointer_from_objref','pop!','popdisplay','popfirst!',
                 'position','powermod','precision','precompile','prepend!','prevfloat','prevind',
                 'prevpow','print','println','printstyled','process_exited','process_running','prod',
                 'prod!','promote','promote_rule','promote_shape','promote_type','propertynames','push!',
@@ -184,7 +184,7 @@ class JuliaLexer(RegexLexer):
                 'uppercasefirst','valtype','values','vcat','vec','view','wait','walkdir','which','widemul',
                 'widen','withenv','write','xor','yield','yieldto','zero','zeros','zip','applicable',
                 'eval','fieldtype','getfield','ifelse','invoke','isa','isdefined','nfields','nothing',
-                'setfield!','throw','tuple','typeassert','typeof','undef','include'
+                'setfield!','throw','tuple','typeassert','typeof','undef','include','__precompile__'
             ], suffix=r'\b'), Name.Function),
 
             # macros exported by Core and Base
@@ -197,7 +197,7 @@ class JuliaLexer(RegexLexer):
                 '@polly','@r_str','@raw_str','@s_str','@show','@simd','@specialize','@static','@sync',
                 '@task','@text_str','@threadcall','@time','@timed','@timev','@uint128_str','@v_str',
                 '@view','@views','@warn'
-            ], suffix=r'\b'), Name.Namespace),
+            ], suffix=r'\b'), Name.Function),
 
             # modules exported by Core and Base
             (words([
@@ -205,19 +205,13 @@ class JuliaLexer(RegexLexer):
                 'StackTraces','Sys','Threads','Core','Main'
             ], suffix=r'\b'), Name.Namespace),
 
-            # builtins
+            # variables exported by Core and Base
             (words([
-                u'ARGS', u'CPU_CORES', u'C_NULL', u'DevNull', u'ENDIAN_BOM',
-                u'ENV', u'I', u'Inf', u'Inf16', u'Inf32', u'Inf64',
-                u'InsertionSort', u'JULIA_HOME', u'LOAD_PATH', u'MergeSort',
-                u'NaN', u'NaN16', u'NaN32', u'NaN64', u'OS_NAME',
-                u'QuickSort', u'RoundDown', u'RoundFromZero', u'RoundNearest',
-                u'RoundNearestTiesAway', u'RoundNearestTiesUp',
-                u'RoundToZero', u'RoundUp', u'STDERR', u'STDIN', u'STDOUT',
-                u'VERSION', u'WORD_SIZE', u'catalan', u'e', u'eu',
-                u'eulergamma', u'golden', u'im', u'nothing', u'pi', u'γ',
-                u'π', u'φ'],
-                suffix=r'\b'), Name.Builtin),
+                'ARGS','C_NULL','DEPOT_PATH','ENDIAN_BOM','ENV','Inf','Inf16','Inf32','Inf64','InsertionSort',
+                'LOAD_PATH','MergeSort','NaN','NaN16','NaN32','NaN64','PROGRAM_FILE','PipeBuffer','QuickSort',
+                'RoundDown','RoundFromZero','RoundNearest','RoundNearestTiesAway','RoundNearestTiesUp',
+                'RoundToZero','RoundUp','VERSION','pi','e','π','ℯ'
+            ], suffix=r'\b'), Name.Variable),
 
             # operators
             # see: https://github.com/JuliaLang/julia/blob/master/src/julia-parser.scm
