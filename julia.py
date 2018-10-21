@@ -50,13 +50,13 @@ class JuliaLexer(RegexLexer):
             (r'in\b', Keyword.Pseudo),
             (r'(true|false)\b', Keyword.Constant),
             (r'(local|global|const)\b', Keyword.Declaration),
+            (r'(using|import|export)\b', Keyword.Namespace),
             (words([
-                'function', 'type', 'typealias', 'abstract', 'immutable',
-                'baremodule', 'begin', 'bitstype', 'break', 'catch', 'ccall',
-                'continue', 'do', 'else', 'elseif', 'end', 'export', 'finally',
-                'for', 'if', 'import', 'importall', 'let', 'macro', 'module',
-                'quote', 'return', 'try', 'using', 'while'],
-                suffix=r'\b'), Keyword),
+                'begin', 'while', 'if', 'for', 'try', 'return', 'break', 'continue',
+                'function', 'macro', 'quote', 'let', 'do', 'type', 'primitive',
+                'struct', 'module', 'baremodule', 'using', 'import', 'export',
+                'end', 'else', 'elseif', 'catch', 'finally'],
+                suffix=r'\b'), Keyword.Reserved),
 
             # NOTE
             # Patterns below work only for definition sites and thus hardly reliable.
