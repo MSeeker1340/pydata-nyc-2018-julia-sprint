@@ -1,30 +1,27 @@
-open("names.txt", "w") do f
+# Script modified from
+# https://github.com/JuliaEditorSupport/Julia-sublime/blob/master/Julia.sublime-syntax
+symbols = Set(filter(x -> !Base.isdeprecated(Base, x), [names(Base); names(Core)]))
+types = filter(x -> isa(eval(x), DataType) || isa(eval(x), UnionAll), symbols)
+funcs = filter(x -> (c = string(x)[1];
+                     isascii(c) && isletter(c) && islowercase(c)), symbols)
+macros = filter(x -> string(x)[1] == '@', symbols)
+modules = filter(x -> isa(eval(x), Module), symbols)
+others = setdiff(symbols, types, funcs, macros, modules)
 
-    # Script modified from
-    # https://github.com/JuliaEditorSupport/Julia-sublime/blob/master/Julia.sublime-syntax
-    base_types = join(map(x -> "'$x'", sort(unique((
-        filter(x -> isletter(x[1]), 
-            string.(filter!(x -> isa(eval(x), DataType) || isa(eval(x), UnionAll),
-                filter!(x -> !Base.isdeprecated(Base, x),
-                    [names(Base); names(Core)])))))))), ',')
-    base_funcs = join(map(x -> "'$x'",
-        filter!(x -> isascii(x[1]) && isletter(x[1]) && islowercase(x[1]),
-            map(string, filter!(x -> !Base.isdeprecated(Base, x),
-                [names(Base); names(Core); :include])))), ',')
-    base_macros = join(map(x -> "'$x'",
-    filter!(x -> x[1] == '@',
-        map(string, filter!(x -> !Base.isdeprecated(Base, x),
-            [names(Base); names(Core)])))), ',')
-    base_modules = join(map(x -> "'$x'",
-        filter!(x -> isa(eval(x), Module) && !Base.isdeprecated(Base, x),
-            [names(Base); names(Core)])), ",")
-    
+function print_category(f::IO, cat)
+    out = join(["'$(string(symbol))'" for symbol in cat], ',')
+    println(f, out)
+end
+
+open("names.txt", "w") do f
     println(f, "Core & Base types:")
-    println(f, base_types)
+    print_category(f, types)
     println(f, "\nCore & Base functions:")
-    println(f, base_funcs)
+    print_category(f, funcs)
     println(f, "\nCore & Base macros")
-    println(f, base_macros)
+    print_category(f, macros)
     println(f, "\nCore & Base modules:")
-    println(f, base_modules)
+    print_category(f, modules)
+    println(f, "\nOther names exported by Core & Base (handle these manually):")
+    print_category(f, others)
 end
