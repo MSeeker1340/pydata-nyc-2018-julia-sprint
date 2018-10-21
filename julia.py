@@ -38,6 +38,94 @@ class JuliaLexer(RegexLexer):
 
     flags = re.MULTILINE | re.UNICODE
 
+    prec_assignment = [u'=', u'+=', u'-=', u'*=', u'/=', u'//=', u'\=', u'^=',
+                       u'÷=', u'%=', u'<<=', u'>>=', u'>>>=', u'|=', u'&=',
+                       u'⊻=', u'≔', u'⩴', u'≕']
+    prec_assigment_dotted = [_add_dot(operator) for operator in prec_assignment]
+
+    prec_arrows = [u'←', u'→', u'↔', u'↚', u'↛', u'↞', u'↠', u'↢', u'↣', u'↦',
+                   u'↤', u'↮', u'⇎', u'⇍', u'⇏', u'⇐', u'⇒', u'⇔', u'⇴', u'⇶',
+                   u'⇷', u'⇸', u'⇹', u'⇺', u'⇻', u'⇼', u'⇽', u'⇾', u'⇿',
+                   u'⟵', u'⟶', u'⟷', u'⟹', u'⟺', u'⟻', u'⟼', u'⟽',
+                   u'⟾', u'⟿', u'⤀', u'⤁', u'⤂', u'⤃', u'⤄', u'⤅', u'⤆',
+                   u'⤇', u'⤌', u'⤍', u'⤎', u'⤏', u'⤐', u'⤑', u'⤔', u'⤕',
+                   u'⤖', u'⤗', u'⤘', u'⤝', u'⤞', u'⤟', u'⤠', u'⥄', u'⥅',
+                   u'⥆', u'⥇', u'⥈', u'⥊', u'⥋', u'⥎', u'⥐', u'⥒', u'⥓',
+                   u'⥖', u'⥗', u'⥚', u'⥛', u'⥞', u'⥟', u'⥢', u'⥤', u'⥦',
+                   u'⥧', u'⥨', u'⥩', u'⥪', u'⥫', u'⥬', u'⥭', u'⥰', u'⧴',
+                   u'⬱', u'⬰', u'⬲', u'⬳', u'⬴', u'⬵', u'⬶', u'⬷', u'⬸',
+                   u'⬹', u'⬺', u'⬻', u'⬼', u'⬽', u'⬾', u'⬿', u'⭀', u'⭁',
+                   u'⭂', u'⭃', u'⭄', u'⭇', u'⭈', u'⭉', u'⭊', u'⭋', u'⭌',
+                   u'￩', u'￫', u'⇜', u'⇝', u'↜', u'↝', u'↩', u'↪', u'↫', u'↬',
+                   u'↼', u'↽', u'⇀', u'⇁', u'⇄', u'⇆', u'⇇', u'⇉', u'⇋', u'⇌',
+                   u'⇚', u'⇛', u'⇠', u'⇢', u'↷', u'↶', u'↺', u'↻']
+    prec_arrows_dotted = [_add_dot(operator) for operator in prec_arrows]
+
+    prec_comparison = [u'>', u'<', u'>=', u'≥', u'<=', u'≤', u'==', u'===',
+                       u'≡', u'!=', u'≠', u'!==', u'≢', u'∈', u'∉', u'∋', u'∌',
+                       u'⊆', u'⊈', u'⊂', u'⊄', u'⊊', u'∝', u'∊', u'∍', u'∥',
+                       u'∦', u'∷', u'∺', u'∻', u'∽', u'∾', u'≁', u'≃', u'≂',
+                       u'≄', u'≅', u'≆', u'≇', u'≈', u'≉', u'≊', u'≋', u'≌',
+                       u'≍', u'≎', u'≐', u'≑', u'≒', u'≓', u'≖', u'≗', u'≘',
+                       u'≙', u'≚', u'≛', u'≜', u'≝', u'≞', u'≟', u'≣', u'≦',
+                       u'≧', u'≨', u'≩', u'≪', u'≫', u'≬', u'≭', u'≮', u'≯',
+                       u'≰', u'≱', u'≲', u'≳', u'≴', u'≵', u'≶', u'≷', u'≸',
+                       u'≹', u'≺', u'≻', u'≼', u'≽', u'≾', u'≿', u'⊀', u'⊁',
+                       u'⊃', u'⊅', u'⊇', u'⊉', u'⊋', u'⊏', u'⊐', u'⊑', u'⊒',
+                       u'⊜', u'⊩', u'⊬', u'⊮', u'⊰', u'⊱', u'⊲', u'⊳', u'⊴',
+                       u'⊵', u'⊶', u'⊷', u'⋍', u'⋐', u'⋑', u'⋕', u'⋖', u'⋗',
+                       u'⋘', u'⋙', u'⋚', u'⋛', u'⋜', u'⋝', u'⋞', u'⋟', u'⋠',
+                       u'⋡', u'⋢', u'⋣', u'⋤', u'⋥', u'⋦', u'⋧', u'⋨', u'⋩',
+                       u'⋪', u'⋫', u'⋬', u'⋭', u'⋲', u'⋳', u'⋴', u'⋵', u'⋶',
+                       u'⋷', u'⋸', u'⋹', u'⋺', u'⋻', u'⋼', u'⋽', u'⋾', u'⋿',
+                       u'⟈', u'⟉', u'⟒', u'⦷', u'⧀', u'⧁', u'⧡', u'⧣', u'⧤',
+                       u'⧥', u'⩦', u'⩧', u'⩪', u'⩫', u'⩬', u'⩭', u'⩮', u'⩯',
+                       u'⩰', u'⩱', u'⩲', u'⩳', u'⩵', u'⩶', u'⩷', u'⩸', u'⩹',
+                       u'⩺', u'⩻', u'⩼', u'⩽', u'⩾', u'⩿', u'⪀', u'⪁', u'⪂',
+                       u'⪃', u'⪄', u'⪅', u'⪆', u'⪇', u'⪈', u'⪉', u'⪊', u'⪋',
+                       u'⪌', u'⪍', u'⪎', u'⪏', u'⪐', u'⪑', u'⪒', u'⪓', u'⪔',
+                       u'⪕', u'⪖', u'⪗', u'⪘', u'⪙', u'⪚', u'⪛', u'⪜', u'⪝',
+                       u'⪞', u'⪟', u'⪠', u'⪡', u'⪢', u'⪣', u'⪤', u'⪥', u'⪦',
+                       u'⪧', u'⪨', u'⪩', u'⪪', u'⪫', u'⪬', u'⪭', u'⪮', u'⪯',
+                       u'⪰', u'⪱', u'⪲', u'⪳', u'⪴', u'⪵', u'⪶', u'⪷', u'⪸',
+                       u'⪹', u'⪺', u'⪻', u'⪼', u'⪽', u'⪾', u'⪿', u'⫀', u'⫁',
+                       u'⫂', u'⫃', u'⫄', u'⫅', u'⫆', u'⫇', u'⫈', u'⫉', u'⫊',
+                       u'⫋', u'⫌', u'⫍', u'⫎', u'⫏', u'⫐', u'⫑', u'⫒', u'⫓',
+                       u'⫔', u'⫕', u'⫖', u'⫗', u'⫘', u'⫙', u'⫷', u'⫸', u'⫹',
+                       u'⫺', u'⊢', u'⊣', u'⟂']
+
+    prec_comparison_dotted = [_add_dot(operator) for operator in prec_comparison]
+
+    prec_colon = [u'…', u'⁝', u'⋮', u'⋱', u'⋰', u'⋯']
+    prec_colon_dotted = [_add_dot(operator) for operator in prec_colon]
+
+    prec_plus = [u'+', u'-', u'|', u'⊕', u'⊖', u'⊞', u'⊟', u'++', u'∪', u'∨',
+                 u'⊔', u'±', u'∓', u'∔', u'∸', u'≏', u'⊎', u'⊻', u'⊽', u'⋎',
+                 u'⋓', u'⧺', u'⧻', u'⨈', u'⨢', u'⨣', u'⨤', u'⨥', u'⨦', u'⨧',
+                 u'⨨', u'⨩', u'⨪', u'⨫', u'⨬', u'⨭', u'⨮', u'⨹', u'⨺', u'⩁',
+                 u'⩂', u'⩅', u'⩊', u'⩌', u'⩏', u'⩐', u'⩒', u'⩔', u'⩖', u'⩗',
+                 u'⩛', u'⩝', u'⩡', u'⩢', u'⩣']
+    prec_plus_dotted = [_add_dot(operator) for operator in prec_plus]
+
+    prec_times = [u'*', u'/', u'÷', u'%', u'&', u'⋅', u'∘', u'×', u'\\', u'∩',
+                  u'∧', u'⊗', u'⊘', u'⊙', u'⊚', u'⊛', u'⊠', u'⊡', u'⊓', u'∗',
+                  u'∙', u'∤', u'⅋', u'≀', u'⊼', u'⋄', u'⋆', u'⋇', u'⋉', u'⋊',
+                  u'⋋', u'⋌', u'⋏', u'⋒', u'⟑', u'⦸', u'⦼', u'⦾', u'⦿', u'⧶',
+                  u'⧷', u'⨇', u'⨰', u'⨱', u'⨲', u'⨳', u'⨴', u'⨵', u'⨶', u'⨷',
+                  u'⨸', u'⨻', u'⨼', u'⨽', u'⩀', u'⩃', u'⩄', u'⩋', u'⩍', u'⩎',
+                  u'⩑', u'⩓', u'⩕', u'⩘', u'⩚', u'⩜', u'⩞', u'⩟', u'⩠', u'⫛',
+                  u'⊍', u'▷', u'⨝', u'⟕', u'⟖', u'⟗']
+    prec_times_dotted = [_add_dot(operator) for operator in prec_times]
+
+    prec_power = [u'^', u'↑', u'↓', u'⇵', u'⟰', u'⟱', u'⤈', u'⤉', u'⤊',
+                  u'⤋', u'⤒', u'⤓', u'⥉', u'⥌', u'⥍', u'⥏', u'⥑', u'⥔', u'⥕',
+                  u'⥘', u'⥙', u'⥜', u'⥝', u'⥠', u'⥡', u'⥣', u'⥥', u'⥮', u'⥯',
+                  u'￪', u'￬']
+    prec_power_dotted = [_add_dot(operator) for operator in prec_power]
+
+    unary_ops = [u'+', u'-', u'!', u'~', u'√', u'∛', u'∜']
+    unary_ops_dotted = [_add_dot(operator) for operator in unary_ops]
+
     tokens = {
         'root': [
             (r'\n', Text),
@@ -217,43 +305,39 @@ class JuliaLexer(RegexLexer):
             # see: https://github.com/JuliaLang/julia/blob/master/src/julia-parser.scm
             (words([
                 # prec-assignment
-                u'=', u':=', u'+=', u'-=', u'*=', u'/=', u'//=', u'.//=', u'.*=', u'./=',
-                u'\=', u'.\=', u'^=', u'.^=', u'÷=', u'.÷=', u'%=', u'.%=', u'|=', u'&=',
-                u'$=', u'=>', u'<<=', u'>>=', u'>>>=', u'~', u'.+=', u'.-=',
+                *prec_assignment, *prec_assigment_dotted,
+                # prec-pair
+                u'=>',
                 # prec-conditional
                 u'?',
                 # prec-arrow
-                u'--', u'-->',
+                u'--', u'-->', *prec_arrows, *prec_arrows_dotted,
                 # prec-lazy-or
                 u'||',
                 # prec-lazy-and
                 u'&&',
                 # prec-comparison
-                u'>', u'<', u'>=', u'≥', u'<=', u'≤', u'==', u'===', u'≡', u'!=', u'≠',
-                u'!==', u'≢', u'.>', u'.<', u'.>=', u'.≥', u'.<=', u'.≤', u'.==', u'.!=',
-                u'.≠', u'.=', u'.!', u'<:', u'>:', u'∈', u'∉', u'∋', u'∌', u'⊆',
-                u'⊈', u'⊂',
-                u'⊄', u'⊊',
+                u'<:', u'>:', *prec_comparison, *prec_comparison_dotted
                 # prec-pipe
-                u'|>', u'<|',
+                u'|>', u'<|', u'.|>', u'.<|',
                 # prec-colon
-                u':',
+                u':', u'..', *prec_colon, *prec_colon_dotted,
                 # prec-plus
-                u'+', u'-', u'.+', u'.-', u'|', u'∪', u'$',
+                u'$', *prec_plus, *prec_plus_dotted
                 # prec-bitshift
                 u'<<', u'>>', u'>>>', u'.<<', u'.>>', u'.>>>',
                 # prec-times
-                u'*', u'/', u'./', u'÷', u'.÷', u'%', u'⋅', u'.%', u'.*', u'\\', u'.\\', u'&', u'∩',
+                *prec_times, *prec_times_dotted,
                 # prec-rational
                 u'//', u'.//',
                 # prec-power
-                u'^', u'.^',
+                *prec_power, *prec_power_dotted,
                 # prec-decl
                 u'::',
                 # prec-dot
                 u'.',
                 # unary op
-                u'+', u'-', u'!', u'~', u'√', u'∛', u'∜'
+                *unary_ops, *unary_ops_dotted
             ]), Operator),
 
             # chars
@@ -403,3 +487,7 @@ class JuliaConsoleLexer(Lexer):
             for item in do_insertions(
                     insertions, jllexer.get_tokens_unprocessed(curcode)):
                 yield item
+
+
+def _add_dot(text):
+    return '.' + text
