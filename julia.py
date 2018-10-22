@@ -145,7 +145,7 @@ class JuliaLexer(RegexLexer):
                 'begin', 'while', 'if', 'for', 'try', 'return', 'break', 'continue',
                 'function', 'macro', 'quote', 'let', 'do', 'type', 'primitive', 'mutable',
                 'struct', 'module', 'baremodule', 'using', 'import', 'export',
-                'end', 'else', 'elseif', 'catch', 'finally'],
+                'end', 'else', 'elseif', 'catch', 'finally', 'where'],
                 suffix=r'\b'), Keyword.Reserved),
 
             # NOTE
