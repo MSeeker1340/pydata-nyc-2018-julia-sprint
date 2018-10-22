@@ -23,6 +23,8 @@ allowed_variable = (
     u'(?:[a-zA-Z_\u00A1-\uffff]|%s)(?:[a-zA-Z_0-9\u00A1-\uffff]|%s)*!*' %
     ((unirange(0x10000, 0x10ffff),) * 2))
 
+def _add_dot(text):
+    return '.' + text
 
 class JuliaLexer(RegexLexer):
     """
@@ -141,7 +143,7 @@ class JuliaLexer(RegexLexer):
             (r'(using|import|export)\b', Keyword.Namespace),
             (words([
                 'begin', 'while', 'if', 'for', 'try', 'return', 'break', 'continue',
-                'function', 'macro', 'quote', 'let', 'do', 'type', 'primitive',
+                'function', 'macro', 'quote', 'let', 'do', 'type', 'primitive', 'mutable',
                 'struct', 'module', 'baremodule', 'using', 'import', 'export',
                 'end', 'else', 'elseif', 'catch', 'finally'],
                 suffix=r'\b'), Keyword.Reserved),
@@ -190,7 +192,7 @@ class JuliaLexer(RegexLexer):
                 'UInt32','UInt64','UInt8','UndefInitializer','UndefKeywordError','UndefRefError',
                 'UndefVarError','Union','UnionAll','UnitRange','Unsigned','Val','Vararg',
                 'VecElement','VecOrMat','Vector','VersionNumber','WeakKeyDict','WeakRef'], suffix=r'\b'),
-                Name.Variable.Class),
+                Keyword.Type),
 
             # functions exported by Core and Base
             (words([
@@ -271,7 +273,7 @@ class JuliaLexer(RegexLexer):
                 'unsafe_trunc','unsafe_wrap','unsafe_write','unsigned','uperm','uppercase',
                 'uppercasefirst','valtype','values','vcat','vec','view','wait','walkdir','which','widemul',
                 'widen','withenv','write','xor','yield','yieldto','zero','zeros','zip','applicable',
-                'eval','fieldtype','getfield','ifelse','invoke','isa','isdefined','nfields','nothing',
+                'eval','fieldtype','getfield','ifelse','invoke','isa','isdefined','nfields',
                 'setfield!','throw','tuple','typeassert','typeof','undef','include','__precompile__'
             ], suffix=r'\b'), Name.Function),
 
@@ -285,7 +287,7 @@ class JuliaLexer(RegexLexer):
                 '@polly','@r_str','@raw_str','@s_str','@show','@simd','@specialize','@static','@sync',
                 '@task','@text_str','@threadcall','@time','@timed','@timev','@uint128_str','@v_str',
                 '@view','@views','@warn'
-            ], suffix=r'\b'), Name.Function),
+            ], suffix=r'\b'), Name.Decorator),
 
             # modules exported by Core and Base
             (words([
@@ -298,7 +300,7 @@ class JuliaLexer(RegexLexer):
                 'ARGS','C_NULL','DEPOT_PATH','ENDIAN_BOM','ENV','Inf','Inf16','Inf32','Inf64','InsertionSort',
                 'LOAD_PATH','MergeSort','NaN','NaN16','NaN32','NaN64','PROGRAM_FILE','PipeBuffer','QuickSort',
                 'RoundDown','RoundFromZero','RoundNearest','RoundNearestTiesAway','RoundNearestTiesUp',
-                'RoundToZero','RoundUp','VERSION','pi','e','π','ℯ'
+                'RoundToZero','RoundUp','VERSION','pi','e','π','ℯ','nothing'
             ], suffix=r'\b'), Name.Variable),
 
             # operators
@@ -317,13 +319,13 @@ class JuliaLexer(RegexLexer):
                 # prec-lazy-and
                 u'&&',
                 # prec-comparison
-                u'<:', u'>:', *prec_comparison, *prec_comparison_dotted
+                u'<:', u'>:', *prec_comparison, *prec_comparison_dotted,
                 # prec-pipe
                 u'|>', u'<|', u'.|>', u'.<|',
                 # prec-colon
                 u':', u'..', *prec_colon, *prec_colon_dotted,
                 # prec-plus
-                u'$', *prec_plus, *prec_plus_dotted
+                u'$', *prec_plus, *prec_plus_dotted,
                 # prec-bitshift
                 u'<<', u'>>', u'>>>', u'.<<', u'.>>', u'.>>>',
                 # prec-times
@@ -487,7 +489,3 @@ class JuliaConsoleLexer(Lexer):
             for item in do_insertions(
                     insertions, jllexer.get_tokens_unprocessed(curcode)):
                 yield item
-
-
-def _add_dot(text):
-    return '.' + text
